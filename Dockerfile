@@ -1,10 +1,7 @@
-# Use official PHP image with Apache
+# Step 1: Use official PHP + Apache image
 FROM php:8.2-apache
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Install system dependencies
+# Step 2: Install system dependencies and PHP extensions required by Laravel
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -18,25 +15,25 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql mbstring zip gd \
     && a2enmod rewrite
 
-# Set Apache to serve the public folder
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Step 3: Set working directory
+WORKDIR /var/www/html
 
-# Copy composer binary
+# Step 4: Copy composer from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy existing application
-COPY . /var/www/html
+# Step 5: Copy application files
+COPY . .
 
-# Install composer dependencies
+# Step 6: Install PHP dependencies using Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
+# Step 7: Set permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Expose port 80
+# Step 8: Expose Apache port
 EXPOSE 80
 
-# Start Apache
+# Step 9: Start Apache
 CMD ["apache2-foreground"]
