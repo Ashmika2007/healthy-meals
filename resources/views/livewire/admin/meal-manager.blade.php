@@ -23,6 +23,52 @@
         </div>
     </form>
 
+    <!-- Add Meal Form -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3 text-success">{{ $mealId ? 'Edit Meal' : 'Add New Meal' }}</h5>
+
+            <form wire:submit.prevent="saveMeal" enctype="multipart/form-data">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" wire:model="name" class="form-control" placeholder="Meal Name">
+                        @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" wire:model="price" class="form-control" placeholder="Price">
+                        @error('price') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="col-md-3">
+                        <select wire:model="category_id" class="form-select">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="col-md-2">
+                        <input type="file" wire:model="image" class="form-control">
+                        @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="col-md-12 text-end">
+                        <button type="submit" class="btn btn-success">{{ $mealId ? 'Update Meal' : 'Add Meal' }}</button>
+                    </div>
+                </div>
+            </form>
+            <!-- Success Message -->
+@if (session()->has('message'))
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-3" role="alert">
+        <i class="fas fa-check-circle me-2"></i> {{ session('message') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+<div class="card shadow-sm mb-4 border-0">
+    <div class="card-body">
+
+        </div>
+    </div>
+
     <!-- Current Filters -->
     @if($filterSearch || $filterCategory)
         <p class="text-muted mb-4">
@@ -34,62 +80,62 @@
 
     <!-- Meals Table -->
     @if($meals->count())
-    <div class="table-responsive shadow rounded bg-white p-4">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark text-white">
-                <tr>
-                    <th class="text-center">#</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($meals as $meal)
-                <tr class="align-middle" style="transition: background 0.3s;" onmouseover="this.style.background='#f1f8f2'" onmouseout="this.style.background='white'">
-                    <td class="text-center fw-semibold">{{ $meal->id }}</td>
-                    <td>
-                        @if($meal->image)
-                            <img src="{{ asset('storage/meals/'.$meal->image) }}" 
-                                 class="rounded-circle border border-success shadow-sm" width="60" height="60" alt="{{ $meal->name }}">
-                        @else
-                            <div class="bg-secondary rounded-circle d-inline-block shadow-sm" style="width:60px; height:60px;"></div>
-                        @endif
-                    </td>
-                    <td class="fw-bold text-success">{{ $meal->name }}</td>
-                    <td>
-                        <span class="badge bg-info text-dark shadow-sm">{{ $meal->category->name ?? '-' }}</span>
-                    </td>
-                    <td><span class="fw-bold text-success">Rs {{ number_format($meal->price, 2) }}</span></td>
-                    <td class="text-center">
-                        <button wire:click="editMeal({{ $meal->id }})" 
-                                class="btn btn-sm btn-primary me-1 shadow-sm" 
-                                style="transition: transform 0.2s;" 
-                                onmouseover="this.style.transform='scale(1.05)'" 
-                                onmouseout="this.style.transform='scale(1)'">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button wire:click="deleteMeal({{ $meal->id }})" 
-                                class="btn btn-sm btn-danger shadow-sm" 
-                                onclick="return confirm('Are you sure you want to delete this meal?')"
-                                style="transition: transform 0.2s;" 
-                                onmouseover="this.style.transform='scale(1.05)'" 
-                                onmouseout="this.style.transform='scale(1)'">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="table-responsive shadow rounded bg-white p-4">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark text-white">
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($meals as $meal)
+                        <tr class="align-middle" style="transition: background 0.3s;" onmouseover="this.style.background='#f1f8f2'" onmouseout="this.style.background='white'">
+                            <td class="text-center fw-semibold">{{ $meal->id }}</td>
+                            <td>
+                                @if($meal->image)
+                                    <img src="{{ asset('storage/meals/'.$meal->image) }}" 
+                                         class="rounded-circle border border-success shadow-sm" width="60" height="60" alt="{{ $meal->name }}">
+                                @else
+                                    <div class="bg-secondary rounded-circle d-inline-block shadow-sm" style="width:60px; height:60px;"></div>
+                                @endif
+                            </td>
+                            <td class="fw-bold text-success">{{ $meal->name }}</td>
+                            <td>
+                                <span class="badge bg-info text-dark shadow-sm">{{ $meal->category->name ?? '-' }}</span>
+                            </td>
+                            <td><span class="fw-bold text-success">Rs {{ number_format($meal->price, 2) }}</span></td>
+                            <td class="text-center">
+                                <button wire:click="editMeal({{ $meal->id }})" 
+                                        class="btn btn-sm btn-primary me-1 shadow-sm" 
+                                        style="transition: transform 0.2s;" 
+                                        onmouseover="this.style.transform='scale(1.05)'" 
+                                        onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button wire:click="deleteMeal({{ $meal->id }})" 
+                                        class="btn btn-sm btn-danger shadow-sm" 
+                                        onclick="return confirm('Are you sure you want to delete this meal?')"
+                                        style="transition: transform 0.2s;" 
+                                        onmouseover="this.style.transform='scale(1.05)'" 
+                                        onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        <!-- Pagination -->
-        <div class="mt-4 d-flex justify-content-end">
-            {{ $meals->links('pagination::bootstrap-5') }}
+            <!-- Pagination -->
+            <div class="mt-4 d-flex justify-content-end">
+                {{ $meals->links('pagination::bootstrap-5') }}
+            </div>
         </div>
-    </div>
     @else
         <p class="text-center text-muted mt-4">No meals found.</p>
     @endif

@@ -14,7 +14,10 @@ class Order extends Model
         'status',
         'total_price', // optional if you store it
     ];
-
+ public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
     // Each order belongs to a user
     public function user()
     {

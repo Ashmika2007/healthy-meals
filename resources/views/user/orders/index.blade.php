@@ -5,6 +5,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <div class="container py-5" style="font-family: 'Poppins', sans-serif;">
+
+    <!-- SUCCESS MESSAGE -->
+    @if(session('success'))
+        <div class="alert alert-success text-center rounded-3 mb-4 shadow-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <h2 class="mb-5 fw-bold text-center text-success">My Orders</h2>
 
     @forelse($orders as $order)

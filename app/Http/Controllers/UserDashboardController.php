@@ -117,7 +117,9 @@ class UserDashboardController extends Controller
         session()->forget('cart');
 
         // 4. Redirect
-        return redirect()->route('user.orders')->with('success', 'Order placed successfully!');
+        // after saving the order
+return redirect()->route('user.orders')->with('success', 'Your order has been placed successfully!');
+
     }
 
     // Buy now for a single meal
@@ -157,7 +159,8 @@ class UserDashboardController extends Controller
             ->latest()
             ->get();
 
-        return view('user.orders', compact('orders'));
+        return view('users.order.index', compact('orders'));
+
     }
 
 }
