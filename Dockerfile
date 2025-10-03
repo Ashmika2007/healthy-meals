@@ -1,3 +1,16 @@
+# Set working dir to Laravel public
+WORKDIR /var/www/html
+
+# Copy everything
+COPY . .
+
+# Apache serves from public folder
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+
+# Enable rewrite (needed for Laravel routes)
+RUN a2enmod rewrite
+
 # Use official PHP image with Apache
 FROM php:8.2-apache
 
