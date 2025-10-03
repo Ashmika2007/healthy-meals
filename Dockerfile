@@ -1,39 +1,36 @@
-# Step 1: Use official PHP image with Apache
+# Use official PHP image with Apache
 FROM php:8.2-apache
 
-# Step 2: Set working directory
+# Set working directory
 WORKDIR /var/www/html
 
-# Step 3: Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    zip \
+    libonig-dev \
     libpng-dev \
     libjpeg-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    git \
+    libfreetype6-dev \
     curl \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo pdo_mysql mbstring zip gd \
+    && a2enmod rewrite
 
-# Step 4: Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
-# Step 5: Install Composer
+# Copy composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Step 6: Copy project files
-COPY . .
+# Copy existing application
+COPY . /var/www/html
 
-# Step 7: Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Step 8: Set permissions
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Step 9: Expose port
+# Expose port 80
 EXPOSE 80
 
-# Step 10: Start Apache
+# Start Apache
 CMD ["apache2-foreground"]
