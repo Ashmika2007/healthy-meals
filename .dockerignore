@@ -2,4 +2,5 @@ vendor
 node_modules
 .env
 .git
-.DS_Store
+.gitignore
+docker-compose.override.yml
