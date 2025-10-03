@@ -12,19 +12,20 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     curl \
+    default-mysql-client \
     && docker-php-ext-install pdo pdo_mysql mbstring zip gd \
     && a2enmod rewrite
 
 # Step 3: Set working directory
 WORKDIR /var/www/html
 
-# Step 4: Copy composer from official image
+# Step 4: Copy composer binary from official composer image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Step 5: Copy application files
 COPY . .
 
-# Step 6: Install PHP dependencies using Composer
+# Step 6: Run composer install
 RUN composer install --no-dev --optimize-autoloader
 
 # Step 7: Set permissions for Laravel storage and cache
