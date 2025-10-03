@@ -1,17 +1,4 @@
-# Set working dir to Laravel public
-WORKDIR /var/www/html
-
-# Copy everything
-COPY . .
-
-# Apache serves from public folder
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
-
-# Enable rewrite (needed for Laravel routes)
-RUN a2enmod rewrite
-
-# Use official PHP image with Apache
+# Use official PHP with Apache
 FROM php:8.2-apache
 
 # Set working directory
@@ -31,13 +18,17 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql mbstring zip gd \
     && a2enmod rewrite
 
-# Copy composer binary
+# Copy composer binary from composer image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy existing application
+# Copy project files into container
 COPY . /var/www/html
 
-# Set permissions
+# Apache should serve from Laravel's public folder
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
+    && sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+
+# Permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
@@ -46,4 +37,4 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 
 # Start Apache
-CMD ["/usr/local/bin/00-laravel-deploy.sh"]
+CMD ["apache2-foreground"]
