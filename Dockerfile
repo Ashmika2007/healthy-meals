@@ -33,4 +33,4 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 
 # Start Apache
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/00-laravel-deploy.sh"]
